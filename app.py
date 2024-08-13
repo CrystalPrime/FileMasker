@@ -93,7 +93,7 @@ if uploaded_file is not None:
     
     def detect_column_by_pattern(df):
         for column in df.columns:
-            if df[column].apply(lambda x: isinstance(x, int) and len(str(x)) == 11).all():
+            if df[column].apply(lambda x: (pd.isna(x)) or (isinstance(x, int) and len(str(x)) == 11)).all():
                 return column
         return None
     
@@ -104,6 +104,8 @@ if uploaded_file is not None:
                 df_caller = df.dropna(subset=['KartNo'])
                 df_caller['A_str'] = df_caller[column].apply(lambda x: format(x, '.0f'))
                 if df_caller['A_str'].apply(lambda x: len(x) == 16).all():
+                    df[column].fillna("0000000000000000", inplace=True)
+                    df[column] = df_caller[column].astype(str).replace("\.0", "", regex=True)
                     return column
         return None
 
@@ -162,10 +164,8 @@ if uploaded_file is not None:
         df[detected_YKN] = df[detected_YKN].str[0:3] + "*****" + df[detected_YKN].str[-3:]
 
     if detected_Kart is not None and detected_Kart in columns_to_filter:
-        df[detected_Kart].fillna("0000000000000000", inplace=True)
-        df[detected_Kart] = df[detected_Kart].astype(str).replace("\.0", "", regex=True)
         df[detected_Kart] = df[detected_Kart].str[0:4] + " **** **** " + df[detected_Kart].str[-4:]
-        df[detected_Kart].replace("0000 **** **** 0000", np.nan, inplace=True)
+        df[detected_Kart].replace("0000 **** **** 0000", np.NaN, inplace=True)
 
     if detected_ad is not None and detected_ad in columns_to_filter:
         df[detected_ad] = df[detected_ad].apply(mask_name)
