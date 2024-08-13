@@ -165,7 +165,7 @@ if uploaded_file is not None:
 
     if detected_Kart is not None and detected_Kart in columns_to_filter:
         df[detected_Kart] = df[detected_Kart].str[0:4] + " **** **** " + df[detected_Kart].str[-4:]
-        df[detected_Kart].replace("0000 **** **** 0000", np.NaN, inplace=True)
+        df[detected_Kart].replace("0000 **** **** 0000", np.nan, inplace=True)
 
     if detected_ad is not None and detected_ad in columns_to_filter:
         df[detected_ad] = df[detected_ad].apply(mask_name)
